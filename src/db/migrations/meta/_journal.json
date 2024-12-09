@@ -15,6 +15,13 @@
       "when": 1732611768219,
       "tag": "0001_steep_gorgon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1733695241711,
+      "tag": "0002_lying_romulus",
+      "breakpoints": true
     }
   ]
 }

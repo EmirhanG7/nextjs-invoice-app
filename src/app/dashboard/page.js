@@ -12,7 +12,7 @@ import {Button} from "@/components/ui/button";
 import { CirclePlus } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/db'
-import { Invoices } from "@/db/schema";
+import {Customers, Invoices} from "@/db/schema";
 import {cn} from "@/lib/utils";
 import Container from "@/components/Container";
 import {auth} from "@clerk/nextjs/server";
@@ -28,7 +28,15 @@ export default async function Home() {
 
   const results = await db.select()
     .from(Invoices)
+    .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
     .where(eq(Invoices.userId, userId))
+
+  const invoices = results?.map(({invoices, customers}) => {
+    return {
+      ...invoices,
+      customer: customers
+    }
+  })
 
   console.log(userId)
   console.log(results)
@@ -71,7 +79,7 @@ export default async function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {results.map(result => (
+            {invoices.map(result => (
               <TableRow key={result.id}>
                 <TableCell className="p-0 font-medium text-left">
                   <Link href={`/invoices/${result.id}`} className="block p-4 font-semibold">
@@ -79,13 +87,13 @@ export default async function Home() {
                   </Link>
                 </TableCell>
                 <TableCell className="p-0 text-left">
-                  <Link href={`/invoices/${result.id}`} className="block p-4 font-semibold">
-                    Philip J. Fry
+                  <Link href={`/invoices/${result.id}`} className="block p-4 font-semibold capitalize">
+                    {result.customer.name}
                   </Link>
                 </TableCell>
                 <TableCell className="p-0 text-left">
                   <Link href={`/invoices/${result.id}`} className='block p-4'>
-                    fry@planetexpress.com
+                    {result.customer.email}
                   </Link>
                 </TableCell>
                 <TableCell className="p-0 text-center">
